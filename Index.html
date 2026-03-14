@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Budget"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Budget</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0A0D;--sf:#131318;--sf2:#1C1C24;--bd:rgba(255,255,255,0.06);
+  --go:#C9A46E;--go-d:rgba(201,164,110,0.10);--go-b:rgba(201,164,110,0.22);
+  --tx:#F2EFE8;--tm:#7A7870;--td:#35353F;
+  --gr:#6EE7B7;--gr-d:rgba(110,231,183,0.08);--gr-b:rgba(110,231,183,0.18);
+  --re:#F87171;--re-d:rgba(248,113,113,0.08);--re-b:rgba(248,113,113,0.18);
+  --sa:#93C5FD;--sa-d:rgba(147,197,253,0.08);--sa-b:rgba(147,197,253,0.18);
+  --fd:'Cormorant Garamond',Georgia,serif;--fu:'Outfit',system-ui,sans-serif;
+  --st:env(safe-area-inset-top,44px);--sb:env(safe-area-inset-bottom,34px);
+  --r:18px;--rs:26px
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--fu);-webkit-font-smoothing:antialiased;overflow:hidden;user-select:none;-webkit-user-select:none}
+#app{height:100%;display:flex;flex-direction:column;padding-top:var(--st);padding-bottom:calc(var(--sb) + 68px)}
+.view{display:none;flex:1;overflow-y:auto;padding:0 18px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.view::-webkit-scrollbar{display:none}
+.view.active{display:flex;flex-direction:column}
+
+/* === HOME === */
+#view-home{align-items:center;padding-top:28px;gap:0}
+.eyebrow{font-size:10px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(–td);margin-bottom:10px}
+.hnw{display:flex;align-items:flex-start}
+.hn-s{font-family:var(–fd);font-weight:300;font-size:clamp(24px,7vw,36px);color:var(–gr);margin-top:6px;line-height:1;transition:color .3s}
+.hn-s.neg{color:var(–re)}
+.hn-n{font-family:var(–fd);font-weight:300;font-size:clamp(72px,19vw,100px);line-height:.88;letter-spacing:-.03em;color:var(–gr);transition:color .3s}
+.hn-n.neg{color:var(–re)}
+.hn-e{font-family:var(–fd);font-weight:300;font-size:clamp(20px,5vw,30px);color:inherit;margin-top:6px;opacity:.55;line-height:1}
+.hrule{width:36px;height:1px;background:var(–bd);margin:13px 0}
+.hwk{font-size:12px;color:var(–tm)}
+.hwk b{font-weight:500;color:var(–tx)}
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;margin-top:16px}
+.card{background:var(–sf);border:1px solid var(–bd);border-radius:var(–r);padding:12px 13px}
+.card.gtint{background:var(–gr-d);border-color:var(–gr-b)}
+.card.gotint{background:var(–go-d);border-color:var(–go-b)}
+.card.satint{background:var(–sa-d);border-color:var(–sa-b)}
+.clbl{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(–td);margin-bottom:5px}
+.cval{font-family:var(–fd);font-size:25px;font-weight:400;color:var(–tx);line-height:1}
+.card.gtint .cval{color:var(–gr)}
+.card.gotint .cval{color:var(–go)}
+.card.satint .cval{color:var(–sa)}
+.csub{font-size:10px;color:var(–tm);margin-top:3px}
+.widecard{width:100%;background:var(–sf);border:1px solid var(–bd);border-radius:var(–r);padding:13px 14px;margin-top:7px}
+.wc-row{display:flex;justify-content:space-between;align-items:baseline}
+.wc-lbl{font-size:11px;color:var(–tm)}
+.wc-val{font-family:var(–fd);font-size:24px;font-weight:400;color:var(–go)}
+.wc-sub{font-size:10px;color:var(–td);margin-top:2px}
+.laste{display:flex;align-items:center;gap:11px;background:var(–sf);border:1px solid var(–bd);border-radius:var(–r);padding:11px 13px;margin-top:7px;width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .12s}
+.laste:active{opacity:.6}
+.led{width:7px;height:7px;border-radius:50%;background:var(–re);flex-shrink:0}
+.led.income{background:var(–gr)}
+.let2{flex:1;font-size:12px;color:var(–tm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lea{font-family:var(–fd);font-size:18px;font-weight:400;flex-shrink:0}
+
+/* === NAV === */
+#nav{position:fixed;bottom:0;left:0;right:0;height:calc(68px + var(–sb));background:rgba(10,10,13,.93);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(–bd);display:flex;align-items:flex-start;padding-top:6px;padding-bottom:var(–sb);z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent;transition:opacity .12s}
+.ni:active{opacity:.5}
+.ni-ic{font-size:17px;line-height:1;color:var(–td)}
+.ni-lb{font-size:8px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(–td);transition:color .15s}
+.ni.active .ni-lb,.ni.active .ni-ic{color:var(–go)}
+.niadd{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.niadd-c{width:44px;height:44px;border-radius:50%;background:var(–go);color:#0A0A0D;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:300;margin-top:-14px;box-shadow:0 4px 24px rgba(201,164,110,.35);transition:transform .12s,box-shadow .12s;line-height:1}
+.niadd:active .niadd-c{transform:scale(.92);box-shadow:0 2px 10px rgba(201,164,110,.2)}
+.niadd .ni-lb{color:var(–td)}
+
+/* === SHEETS === */
+.sht-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:200}
+.sht-bg.open{display:block;animation:fi .2s ease}
+.sht{position:fixed;bottom:0;left:0;right:0;background:var(–sf);z-index:201;border-radius:var(–rs) var(–rs) 0 0;border:1px solid var(–bd);border-bottom:none;transform:translateY(100%);transition:transform .34s cubic-bezier(.32,.72,0,1);max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(–sb) + 20px)}
+.sht::-webkit-scrollbar{display:none}
+.sht.open{transform:translateY(0)}
+.sh{width:36px;height:4px;background:var(–td);border-radius:2px;margin:11px auto 0}
+.stt{font-family:var(–fd);font-size:28px;font-weight:400;padding:12px 22px 0}
+.sts{font-size:12px;color:var(–tm);padding:3px 22px 13px}
+.sec{padding:0 22px;margin-bottom:14px}
+.slbl{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(–td);margin-bottom:6px}
+.orow{display:flex;gap:7px}
+.ob{flex:1;padding:10px 6px;background:var(–sf2);border:1px solid var(–bd);border-radius:11px;color:var(–tm);font-family:var(–fu);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;text-align:center}
+.ob.sel{background:var(–go-d);border-color:var(–go-b);color:var(–go)}
+.ob:active{opacity:.65}
+.amtw{display:flex;align-items:center;background:var(–sf2);border:1px solid var(–bd);border-radius:14px;padding:0 15px;gap:2px;transition:border-color .15s}
+.amtw:focus-within{border-color:var(–go-b)}
+.amts{font-family:var(–fd);font-size:24px;font-weight:300;color:var(–td)}
+.amti{flex:1;background:transparent;border:none;outline:none;font-family:var(–fd);font-size:40px;font-weight:300;color:var(–tx);padding:8px 0;-webkit-appearance:none}
+.amti::placeholder{color:var(–td)}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{display:none}
+.txti{width:100%;background:var(–sf2);border:1px solid var(–bd);border-radius:12px;padding:11px 14px;color:var(–tx);font-family:var(–fu);font-size:15px;outline:none;-webkit-appearance:none;transition:border-color .15s}
+.txti:focus{border-color:var(–go-b)}
+.txti::placeholder{color:var(–td)}
+select.txti{cursor:pointer}
+.togr{display:flex;align-items:center;justify-content:space-between;background:var(–sf2);border:1px solid var(–bd);border-radius:12px;padding:12px 14px}
+.tgl{font-size:14px;color:var(–tx)}
+.tgs{font-size:11px;color:var(–tm);margin-top:1px}
+.tog{width:46px;height:27px;border-radius:14px;background:var(–sf);border:1px solid var(–bd);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(–go);border-color:var(–go)}
+.tog::after{content:’’;position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:var(–td);transition:transform .2s,background .2s}
+.tog.on::after{transform:translateX(19px);background:#fff}
+.btnp{width:100%;padding:13px;background:var(–go);border:none;border-radius:12px;color:#0A0A0D;font-family:var(–fu);font-size:15px;font-weight:600;cursor:pointer;transition:opacity .12s,transform .12s;-webkit-tap-highlight-color:transparent}
+.btnp:active{opacity:.82;transform:scale(.985)}
+.btns{width:100%;padding:12px;background:var(–sf2);border:1px solid var(–bd);border-radius:12px;color:var(–tm);font-family:var(–fu);font-size:14px;font-weight:500;cursor:pointer;transition:opacity .12s;-webkit-tap-highlight-color:transparent;margin-top:8px}
+.btns:active{opacity:.65}
+
+/* === TABS === */
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab-btn{flex:1;padding:8px;background:var(–sf2);border:1px solid var(–bd);border-radius:10px;color:var(–tm);font-size:11px;font-weight:500;cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent;transition:all .12s}
+.tab-btn.active{background:var(–go-d);border-color:var(–go-b);color:var(–go)}
+
+/* === STAT CARDS === */
+.stcard{background:var(–sf);border:1px solid var(–bd);border-radius:var(–r);padding:16px;margin-bottom:9px}
+.sc-title{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(–td);margin-bottom:12px}
+.sr{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.025)}
+.sr:last-child{border-bottom:none;padding-bottom:0}
+.sr-l{font-size:12px;color:var(–tm)}
+.sr-v{font-family:var(–fd);font-size:20px;font-weight:400;color:var(–tx)}
+.sr-v.pos{color:var(–gr)}
+.sr-v.neg{color:var(–re)}
+.sr-v.go{color:var(–go)}
+.sr-v.sa{color:var(–sa)}
+
+/* === HISTORY ENTRIES === */
+.he{display:flex;align-items:center;gap:11px;background:var(–sf);border:1px solid var(–bd);border-radius:var(–r);padding:11px 13px;margin-bottom:7px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .12s}
+.he:active{opacity:.6}
+.heic{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.heic.expense{background:var(–re-d);color:var(–re)}
+.heic.income{background:var(–gr-d);color:var(–gr)}
+.heic.sub{background:var(–go-d);color:var(–go)}
+.hein{flex:1;min-width:0}
+.hede{font-size:13px;color:var(–tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heme{font-size:10px;color:var(–tm);margin-top:2px}
+.heat{font-family:var(–fd);font-size:18px;font-weight:400;flex-shrink:0}
+.heat.expense{color:var(–re)}
+.heat.income{color:var(–gr)}
+.heat.sub{color:var(–go)}
+.heat.saving{color:var(–sa)}
+
+/* === SETTINGS === */
+.set-row{display:flex;align-items:center;background:var(–sf);border:1px solid var(–bd);border-radius:var(–r);padding:14px 16px;margin-bottom:7px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .12s}
+.set-row:active{opacity:.65}
+.set-row-l{flex:1}
+.set-row-title{font-size:14px;font-weight:500;color:var(–tx)}
+.set-row-sub{font-size:11px;color:var(–tm);margin-top:2px}
+.set-arrow{color:var(–td);font-size:18px}
+
+/* === DIALOG === */
+.dlg-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;align-items:center;justify-content:center;padding:24px}
+.dlg-bg.open{display:flex;animation:fi .15s ease}
+.dlg{background:var(–sf);border:1px solid var(–bd);border-radius:var(–r);padding:20px;width:100%;max-width:310px;animation:si .2s cubic-bezier(.32,.72,0,1)}
+.dlg-t{font-family:var(–fd);font-size:24px;font-weight:400;margin-bottom:7px}
+.dlg-m{font-size:13px;color:var(–tm);line-height:1.55;margin-bottom:16px;white-space:pre-line}
+.dlg-bs{display:flex;flex-direction:column;gap:7px}
+.dlg-btn{width:100%;padding:12px;border-radius:11px;font-family:var(–fu);font-size:14px;font-weight:500;cursor:pointer;border:none;-webkit-tap-highlight-color:transparent;transition:opacity .12s}
+.dlg-btn:active{opacity:.7}
+.dlg-btn.confirm{background:var(–go);color:#0A0A0D}
+.dlg-btn.cancel{background:var(–sf2);color:var(–tm)}
+.dlg-btn.danger{background:var(–re-d);color:var(–re);border:1px solid var(–re-b)}
+
+.empty{text-align:center;padding:40px 20px;color:var(–tm);font-size:13px}
+.empty-ic{font-size:30px;margin-bottom:10px}
+.vh{font-family:var(–fd);font-size:38px;font-weight:400;margin-bottom:3px}
+.vs{font-size:12px;color:var(–tm);margin-bottom:14px}
+
+.sub-banner{background:var(–re-d);border:1px solid var(–re-b);border-radius:var(–r);padding:11px 14px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+.sub-banner-l{font-size:11px;color:var(–tm)}
+.sub-banner-r{font-family:var(–fd);font-size:18px;color:var(–re)}
+
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes si{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+
+</head>
+<body>
+<div id="app">
+
+<!-- HOME -->
+
+<div id="view-home" class="view active">
+  <div class="eyebrow">Heute verfügbar</div>
+  <div class="hnw">
+    <span class="hn-s" id="h-sign">+</span>
+    <span class="hn-n" id="h-num">—</span>
+    <span class="hn-e">€</span>
+  </div>
+  <div class="hrule"></div>
+  <div class="hwk">Woche: <b id="h-week">—</b> €</div>
+  <!-- Row 1: Heute ausgegeben + Extra Budget -->
+  <div class="hgrid" style="margin-top:16px">
+    <div class="card">
+      <div class="clbl">Heute ausgegeben</div>
+      <div class="cval" id="h-spent">—</div>
+      <div class="csub" id="h-spent-sub">von — € Basis</div>
+    </div>
+    <div class="card gotint">
+      <div class="clbl">Extra Budget</div>
+      <div class="cval" id="h-extra">—</div>
+      <div class="csub">verbleibend</div>
+    </div>
+  </div>
+  <!-- Row 2: Rollover Carry + Gespart Monat -->
+  <div class="hgrid" style="margin-top:7px">
+    <div class="card">
+      <div class="clbl">Rollover (akkumuliert)</div>
+      <div class="cval" id="h-carry">—</div>
+      <div class="csub">seit Monatsstart</div>
+    </div>
+    <div class="card satint">
+      <div class="clbl">Gespart (Monat)</div>
+      <div class="cval" id="h-saved">—</div>
+      <div class="csub" id="h-saved-sub">rollover + extra</div>
+    </div>
+  </div>
+  <!-- Wide: Net Worth -->
+  <div class="widecard" style="margin-top:7px">
+    <div class="wc-row">
+      <span class="wc-lbl">Net Worth</span>
+      <span class="wc-val" id="h-nw">—</span>
+    </div>
+    <div class="wc-sub" id="h-nw-sub">nach Abos: —</div>
+  </div>
+  <!-- Last entry -->
+  <div class="laste" id="h-last" style="display:none" onclick="go('history')">
+    <div class="led" id="le-dot"></div>
+    <div class="let2" id="le-text"></div>
+    <div class="lea" id="le-amt"></div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+
+<div id="view-history" class="view">
+  <div class="vh">Verlauf</div>
+  <div class="vs" id="hist-sub">Letzte Buchungen</div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setHistTab('all')">Alle</button>
+    <button class="tab-btn" onclick="setHistTab('today')">Heute</button>
+    <button class="tab-btn" onclick="setHistTab('expense')">Ausgaben</button>
+    <button class="tab-btn" onclick="setHistTab('income')">Einnahmen</button>
+  </div>
+  <div id="hist-list"></div>
+</div>
+
+<!-- OVERVIEW -->
+
+<div id="view-overview" class="view">
+  <div class="vh">Übersicht</div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setOvTab('weekly')">Woche</button>
+    <button class="tab-btn" onclick="setOvTab('monthly')">Monat</button>
+    <button class="tab-btn" onclick="setOvTab('overall')">Gesamt</button>
+    <button class="tab-btn" onclick="setOvTab('savings')">Sparbuch</button>
+  </div>
+  <div id="ov-content"></div>
+</div>
+
+<!-- SETTINGS -->
+
+<div id="view-settings" class="view">
+  <div class="vh">Einstellungen</div>
+  <div class="vs">Konfiguration & Werkzeuge</div>
+  <div class="stcard">
+    <div class="sc-title">Net Worth</div>
+    <div class="sr"><div class="sr-l">Aktuell</div><div class="sr-v go" id="s-nw-val">—</div></div>
+    <div class="sr"><div class="sr-l">Nach Abos (Monat)</div><div class="sr-v" id="s-nw-sub-val">—</div></div>
+  </div>
+  <div class="set-row" onclick="openSheet('sh-nw')">
+    <div class="set-row-l"><div class="set-row-title">Net Worth anpassen</div><div class="set-row-sub">Direktwert setzen</div></div>
+    <div class="set-arrow">›</div>
+  </div>
+  <div class="set-row" onclick="openSheet('sh-limits')">
+    <div class="set-row-l"><div class="set-row-title">Tageslimits anpassen</div><div class="set-row-sub" id="s-limits-sub">—</div></div>
+    <div class="set-arrow">›</div>
+  </div>
+  <div class="set-row" onclick="openSheet('sh-tz')">
+    <div class="set-row-l"><div class="set-row-title">Timezone</div><div class="set-row-sub" id="s-tz-sub">—</div></div>
+    <div class="set-arrow">›</div>
+  </div>
+  <div class="set-row" onclick="openSheet('sh-fx')">
+    <div class="set-row-l"><div class="set-row-title">FX Kurs (HKD → EUR)</div><div class="set-row-sub" id="s-fx-sub">—</div></div>
+    <div class="set-arrow">›</div>
+  </div>
+  <div class="set-row" onclick="doResetRollovers()">
+    <div class="set-row-l"><div class="set-row-title">Rollover zurücksetzen</div><div class="set-row-sub">Carry ab heute auf 0, übrig kommt ins Sparbuch</div></div>
+    <div class="set-arrow">›</div>
+  </div>
+  <div class="set-row" onclick="openSheet('sh-sub')">
+    <div class="set-row-l"><div class="set-row-title">Abonnements</div><div class="set-row-sub" id="s-sub-sub">—</div></div>
+    <div class="set-arrow">›</div>
+  </div>
+  <div class="set-row" onclick="doExport()">
+    <div class="set-row-l"><div class="set-row-title">Daten exportieren</div><div class="set-row-sub">JSON-Backup erstellen</div></div>
+    <div class="set-arrow">›</div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- NAV -->
+
+<nav id="nav">
+  <div class="ni active" id="ni-home" onclick="go('home')"><div class="ni-ic">⌂</div><div class="ni-lb">Home</div></div>
+  <div class="ni" id="ni-history" onclick="go('history')"><div class="ni-ic">↺</div><div class="ni-lb">Verlauf</div></div>
+  <div class="niadd" onclick="openSheet('sh-add')"><div class="niadd-c">+</div><div class="ni-lb">Buchen</div></div>
+  <div class="ni" id="ni-overview" onclick="go('overview')"><div class="ni-ic">◎</div><div class="ni-lb">Übersicht</div></div>
+  <div class="ni" id="ni-settings" onclick="go('settings')"><div class="ni-ic">⚙</div><div class="ni-lb">Settings</div></div>
+</nav>
+
+<!-- SHEET: ADD TYPE -->
+
+<div class="sht-bg" id="bg-sh-add" onclick="closeSheet('sh-add')"></div>
+<div class="sht" id="sh-add">
+  <div class="sh"></div>
+  <div class="stt">Buchen</div>
+  <div class="sts">Was möchtest du eintragen?</div>
+  <div class="sec">
+    <div class="orow">
+      <button class="ob" onclick="closeSheet('sh-add');setTimeout(()=>openExpSheet(),180)">— Ausgabe</button>
+      <button class="ob" onclick="closeSheet('sh-add');setTimeout(()=>openIncSheet(),180)">+ Einnahme</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: EXPENSE -->
+
+<div class="sht-bg" id="bg-sh-exp" onclick="closeSheet('sh-exp')"></div>
+<div class="sht" id="sh-exp">
+  <div class="sh"></div>
+  <div class="stt">Ausgabe</div>
+  <div class="sts">Neue Ausgabe eintragen</div>
+  <div class="sec">
+    <div class="slbl">Betrag</div>
+    <div class="amtw"><input class="amti" type="number" inputmode="decimal" placeholder="0" id="e-amt"/><span class="amts" id="e-sym">€</span></div>
+  </div>
+  <div class="sec">
+    <div class="slbl">Währung</div>
+    <div class="orow">
+      <button class="ob sel" id="e-eur" onclick="setCur('e','EUR')">EUR</button>
+      <button class="ob" id="e-hkd" onclick="setCur('e','HKD')">HKD</button>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="slbl">Bucket</div>
+    <div class="orow">
+      <button class="ob sel" id="e-daily" onclick="setBucket('daily')">Daily</button>
+      <button class="ob" id="e-extra" onclick="setBucket('extra')">Extra</button>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="slbl">Notiz (optional)</div>
+    <input class="txti" type="text" placeholder="z.B. Mittagessen" id="e-note"/>
+  </div>
+  <div class="sec"><button class="btnp" onclick="saveExp()">Speichern</button></div>
+</div>
+
+<!-- SHEET: INCOME -->
+
+<div class="sht-bg" id="bg-sh-inc" onclick="closeSheet('sh-inc')"></div>
+<div class="sht" id="sh-inc">
+  <div class="sh"></div>
+  <div class="stt">Einnahme</div>
+  <div class="sts">Neue Einnahme eintragen</div>
+  <div class="sec">
+    <div class="slbl">Betrag</div>
+    <div class="amtw"><input class="amti" type="number" inputmode="decimal" placeholder="0" id="i-amt"/><span class="amts" id="i-sym">€</span></div>
+  </div>
+  <div class="sec">
+    <div class="slbl">Währung</div>
+    <div class="orow">
+      <button class="ob sel" id="i-eur" onclick="setCur('i','EUR')">EUR</button>
+      <button class="ob" id="i-hkd" onclick="setCur('i','HKD')">HKD</button>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="slbl">Notiz (optional)</div>
+    <input class="txti" type="text" placeholder="z.B. Instagram Deal" id="i-note"/>
+  </div>
+  <div class="sec">
+    <div class="togr">
+      <div><div class="tgl">Zu Extra-Budget</div><div class="tgs">Erhöht auch dein Extra-Budget</div></div>
+      <div class="tog" id="i-tog" onclick="toggleExtra()"></div>
+    </div>
+  </div>
+  <div class="sec"><button class="btnp" onclick="saveInc()">Speichern</button></div>
+</div>
+
+<!-- SHEET: NET WORTH -->
+
+<div class="sht-bg" id="bg-sh-nw" onclick="closeSheet('sh-nw')"></div>
+<div class="sht" id="sh-nw">
+  <div class="sh"></div>
+  <div class="stt">Net Worth</div>
+  <div class="sts">Direktwert setzen – ändert keine Historie</div>
+  <div class="sec">
+    <div class="slbl">Wert in EUR</div>
+    <div class="amtw"><input class="amti" type="number" inputmode="decimal" placeholder="0" id="nw-amt"/><span class="amts">€</span></div>
+  </div>
+  <div class="sec"><button class="btnp" onclick="saveNW()">Speichern</button></div>
+</div>
+
+<!-- SHEET: LIMITS -->
+
+<div class="sht-bg" id="bg-sh-limits" onclick="closeSheet('sh-limits')"></div>
+<div class="sht" id="sh-limits">
+  <div class="sh"></div>
+  <div class="stt">Tageslimits</div>
+  <div class="sts">Budget-Konfiguration anpassen</div>
+  <div class="sec">
+    <div class="slbl">Wochentag (Mo–Fr)</div>
+    <div class="amtw"><input class="amti" type="number" inputmode="decimal" placeholder="10" id="lim-wd"/><span class="amts">€</span></div>
+  </div>
+  <div class="sec">
+    <div class="slbl">Wochenende (Sa–So)</div>
+    <div class="amtw"><input class="amti" type="number" inputmode="decimal" placeholder="45" id="lim-we"/><span class="amts">€</span></div>
+  </div>
+  <div class="sec">
+    <div class="slbl">Extra Budget (monatlich)</div>
+    <div class="amtw"><input class="amti" type="number" inputmode="decimal" placeholder="250" id="lim-ex"/><span class="amts">€</span></div>
+  </div>
+  <div class="sec"><button class="btnp" onclick="saveLimits()">Speichern</button></div>
+</div>
+
+<!-- SHEET: TIMEZONE -->
+
+<div class="sht-bg" id="bg-sh-tz" onclick="closeSheet('sh-tz')"></div>
+<div class="sht" id="sh-tz">
+  <div class="sh"></div>
+  <div class="stt">Timezone</div>
+  <div class="sts">Wichtig für korrekte Tagesgrenzen</div>
+  <div class="sec">
+    <div class="slbl">Aktuelle Timezone</div>
+    <select class="txti" id="tz-sel">
+      <option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
+      <option value="Europe/Berlin">Europe/Berlin</option>
+      <option value="Europe/London">Europe/London</option>
+      <option value="America/New_York">America/New_York</option>
+      <option value="Asia/Tokyo">Asia/Tokyo</option>
+      <option value="Asia/Shanghai">Asia/Shanghai</option>
+      <option value="Asia/Singapore">Asia/Singapore</option>
+      <option value="UTC">UTC</option>
+    </select>
+  </div>
+  <div class="sec"><button class="btnp" onclick="saveTZ()">Speichern</button></div>
+</div>
+
+<!-- SHEET: FX -->
+
+<div class="sht-bg" id="bg-sh-fx" onclick="closeSheet('sh-fx')"></div>
+<div class="sht" id="sh-fx">
+  <div class="sh"></div>
+  <div class="stt">FX Kurs</div>
+  <div class="sts">Wie viel ist 1 HKD in EUR wert?</div>
+  <div class="sec">
+    <div class="slbl">1 HKD = X EUR</div>
+    <div class="amtw"><input class="amti" type="number" inputmode="decimal" placeholder="0.111" id="fx-rate" style="font-size:28px"/><span class="amts">€</span></div>
+  </div>
+  <div class="sec">
+    <div class="togr">
+      <div><div class="tgl">Live FX (experimentell)</div><div class="tgs">Automatisch aktualisieren</div></div>
+      <div class="tog" id="fx-tog" onclick="toggleFX()"></div>
+    </div>
+  </div>
+  <div class="sec"><button class="btnp" onclick="saveFX()">Speichern</button></div>
+</div>
+
+<!-- SHEET: SUBSCRIPTIONS -->
+
+<div class="sht-bg" id="bg-sh-sub" onclick="closeSheet('sh-sub')"></div>
+<div class="sht" id="sh-sub">
+  <div class="sh"></div>
+  <div class="stt">Abonnements</div>
+  <div class="sts">Wiederkehrende Ausgaben</div>
+  <div class="sec" id="sub-list-sec"></div>
+  <div class="sec">
+    <div class="slbl">Neues Abo hinzufügen</div>
+    <input class="txti" type="text" placeholder="Name (z.B. Netflix)" id="sub-name" style="margin-bottom:7px"/>
+    <div class="amtw" style="margin-bottom:7px"><input class="amti" type="number" inputmode="decimal" placeholder="0" id="sub-amt" style="font-size:30px"/><span class="amts">€</span></div>
+    <div class="slbl" style="margin-top:8px">Intervall</div>
+    <div class="orow">
+      <button class="ob sel" id="sub-m" onclick="setSubInterval('monthly')">Monatlich</button>
+      <button class="ob" id="sub-y" onclick="setSubInterval('yearly')">Jährlich</button>
+    </div>
+  </div>
+  <div class="sec"><button class="btnp" onclick="addSub()">Abo hinzufügen</button></div>
+</div>
+
+<!-- DIALOG -->
+
+<div class="dlg-bg" id="dlg-bg">
+  <div class="dlg">
+    <div class="dlg-t" id="dlg-t">—</div>
+    <div class="dlg-m" id="dlg-m">—</div>
+    <div class="dlg-bs" id="dlg-bs"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG DEFAULTS
+// ============================================================
+const DEF_WD   = 10;
+const DEF_WE   = 45;
+const DEF_EX   = 250;
+const DEF_NW   = 24500;
+const DEF_FX   = 1/9;
+const DEF_TZ   = "Asia/Hong_Kong";
+const STORE    = "tim_budget_v3";
+const BIG_LIM  = 100;
+
+// ============================================================
+// STATE
+// ============================================================
+let D = null;
+let eCur = 'EUR', eBucket = 'daily';
+let iCur = 'EUR', iToExtra = false;
+let subInterval = 'monthly';
+let useLiveFX = false;
+let ovTab = 'weekly', histTab = 'all';
+
+// ============================================================
+// STORAGE
+// ============================================================
+function loadData() {
+  const raw = localStorage.getItem(STORE);
+  if (!raw) { D = mkDefault(); save(); return; }
+  try { D = JSON.parse(raw); } catch(e) { D = mkDefault(); save(); return; }
+  if (!D.config)   D.config   = {};
+  if (!D.state)    D.state    = {};
+  if (!Array.isArray(D.expenses))      D.expenses      = [];
+  if (!Array.isArray(D.incomes))       D.incomes       = [];
+  if (!Array.isArray(D.subscriptions)) D.subscriptions = [];
+  if (!Array.isArray(D.savings))       D.savings       = [];
+  const c = D.config;
+  if (typeof c.dailyWeekdayLimit !== 'number') c.dailyWeekdayLimit = DEF_WD;
+  if (typeof c.dailyWeekendLimit !== 'number') c.dailyWeekendLimit = DEF_WE;
+  if (typeof c.extraBaseMonthly  !== 'number') c.extraBaseMonthly  = DEF_EX;
+  if (typeof c.eurPerHKD         !== 'number') c.eurPerHKD         = DEF_FX;
+  if (typeof c.netWorthStart     !== 'number') c.netWorthStart     = DEF_NW;
+  if (!c.timezone) c.timezone = DEF_TZ;
+  if (typeof c.useLiveFX !== 'boolean') c.useLiveFX = false;
+  const s = D.state;
+  if (typeof s.netWorth !== 'number') s.netWorth = c.netWorthStart;
+  if (!s.rolloverResetDate) s.rolloverResetDate = null;
+  save();
+}
+
+function save() { localStorage.setItem(STORE, JSON.stringify(D)); }
+
+function mkDefault() {
+  return {
+    version: 4,
+    config: {
+      startDate: todayStr(),
+      dailyWeekdayLimit: DEF_WD, dailyWeekendLimit: DEF_WE,
+      extraBaseMonthly: DEF_EX, eurPerHKD: DEF_FX,
+      netWorthStart: DEF_NW, timezone: DEF_TZ, useLiveFX: false
+    },
+    state: { netWorth: DEF_NW, rolloverResetDate: null },
+    expenses: [], incomes: [], subscriptions: [], savings: []
+  };
+}
+
+// ============================================================
+// TIMEZONE & DATE UTILS
+// ============================================================
+function getTZ() { return D ? (D.config.timezone || DEF_TZ) : DEF_TZ; }
+
+function todayStr(tz) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: tz || getTZ() }).format(new Date());
+}
+function nowTime() {
+  return new Intl.DateTimeFormat('en-GB', { hour:'2-digit', minute:'2-digit', timeZone: getTZ() }).format(new Date());
+}
+function isWeekend(ds) {
+  const day = new Intl.DateTimeFormat('en-US', { weekday:'short', timeZone: getTZ() }).format(new Date(ds + 'T12:00:00'));
+  return day === 'Sat' || day === 'Sun';
+}
+function addDays(ds, n) {
+  const d = new Date(ds + 'T12:00:00');
+  d.setDate(d.getDate() + n);
+  return new Intl.DateTimeFormat('en-CA', { timeZone: getTZ() }).format(d);
+}
+function cmp(a, b) {
+  return new Date(a + 'T00:00:00Z') - new Date(b + 'T00:00:00Z');
+}
+function monthPfx(ds) { return ds.slice(0,7); }
+function monthStart(ds) { return ds.slice(0,7) + '-01'; }
+function uid() { return Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+function sgn(n) { return n >= 0 ? '+' : '−'; }
+function r2(n) { return Math.abs(n).toFixed(2); }
+function toEUR(amt, cur) {
+  return cur === 'HKD' ? amt * (D.config.eurPerHKD || DEF_FX) : amt;
+}
+
+// ============================================================
+// BUDGET LOGIC
+// ============================================================
+function baseDailyLimit(ds) {
+  if (cmp(ds, D.config.startDate) < 0) return 0;
+  return isWeekend(ds) ? D.config.dailyWeekendLimit : D.config.dailyWeekdayLimit;
+}
+function rolloverStart() {
+  const s = D.config.startDate, r = D.state.rolloverResetDate;
+  return (r && cmp(r, s) > 0) ? r : s;
+}
+function dailyExpMap() {
+  const m = {};
+  for (const e of D.expenses) {
+    if (e.bucket !== 'daily') continue;
+    m[e.date] = (m[e.date] || 0) + (e.amountHome || 0);
+  }
+  return m;
+}
+
+function computeStats() {
+  const today = todayStr();
+  const rs    = rolloverStart();
+  const ms    = monthStart(today);
+  const rStart = cmp(rs, ms) > 0 ? rs : ms;
+  const map   = dailyExpMap();
+
+  // rollover up to (not including) today
+  let carry = 0, d = rStart;
+  while (cmp(d, today) < 0) {
+    carry += baseDailyLimit(d) - (map[d] || 0);
+    d = addDays(d, 1);
+  }
+
+  const todayBase  = baseDailyLimit(today);
+  const todaySpent = map[today] || 0;
+  // todayAvail uses rollover; widget turns red when todaySpent > todayBase (per user request)
+  const todayAvail = todayBase + carry - todaySpent;
+  const isOverBase = todaySpent > todayBase;
+
+  // weekly
+  const dow = new Date(today + 'T12:00:00').getDay();
+  const mon = addDays(today, -((dow + 6) % 7));
+  const todayMonth = monthPfx(today);
+  let wCarry = 0, d2 = cmp(rStart, ms) > 0 ? rStart : ms;
+  while (cmp(d2, mon) < 0) {
+    wCarry += baseDailyLimit(d2) - (map[d2] || 0);
+    d2 = addDays(d2, 1);
+  }
+  let wBase = 0, wSpent = 0, wd2 = mon;
+  for (let i = 0; i < 7; i++) {
+    if (monthPfx(wd2) !== todayMonth) break;
+    wBase += baseDailyLimit(wd2);
+    if (cmp(wd2, today) <= 0) wSpent += map[wd2] || 0;
+    wd2 = addDays(wd2, 1);
+  }
+  const weekRemain = wBase + wCarry - wSpent;
+
+  return { today, todayBase, todaySpent, todayAvail, isOverBase, weekRemain };
+}
+
+function extraStats() {
+  const today = todayStr();
+  const td    = new Date(today + 'T12:00:00');
+  const yN = td.getFullYear(), mN = td.getMonth();
+  const sd = new Date(D.config.startDate + 'T12:00:00');
+  let y = sd.getFullYear(), m = sd.getMonth(), rollover = 0;
+  while (y < yN || (y === yN && m <= mN)) {
+    const pfx  = y + '-' + String(m+1).padStart(2,'0');
+    // Extra rollover always from 1st of month
+    const base = D.config.extraBaseMonthly;
+    const exp  = D.expenses.filter(e => e.bucket==='extra' && e.date.startsWith(pfx)).reduce((s,e) => s+(e.amountHome||0), 0);
+    const inc  = D.incomes.filter(i => i.toExtra && i.date.startsWith(pfx)).reduce((s,i) => s+(i.amountHome||0), 0);
+    const budget = base + rollover + inc;
+    if (y===yN && m===mN) {
+      return { base, rolloverFromPrev:rollover, incomes:inc, budgetThisMonth:budget, spentThisMonth:exp, remaining:budget-exp };
+    }
+    rollover = Math.max(0, budget - exp); // only positive extra rolls over
+    if (++m > 11) { m=0; y++; }
+  }
+  const base = D.config.extraBaseMonthly;
+  const exp  = D.expenses.filter(e => e.bucket==='extra').reduce((s,e) => s+(e.amountHome||0), 0);
+  return { base, rolloverFromPrev:0, incomes:0, budgetThisMonth:base, spentThisMonth:exp, remaining:base-exp };
+}
+
+// Savings: rollover carry (can be negative) + extra leftover + manual savings
+function savedThisMonth() {
+  const today = todayStr();
+  const ms    = monthStart(today);
+  const rs    = rolloverStart();
+  const rStart = cmp(rs, ms) > 0 ? rs : ms;
+  const map   = dailyExpMap();
+
+  // Real carry: sum of all daily diffs (positive AND negative)
+  let dailyRollover = 0;
+  let d = rStart;
+  while (cmp(d, today) < 0) {
+    dailyRollover += baseDailyLimit(d) - (map[d] || 0);
+    d = addDays(d, 1);
+  }
+
+  // Extra leftover (positive only)
+  const ex = extraStats();
+  const extraSaved = ex.remaining > 0 ? ex.remaining : 0;
+
+  // Manual savings entries this month
+  const pfx = monthPfx(today);
+  const manualSaved = D.savings
+    .filter(s => s.date && s.date.startsWith(pfx))
+    .reduce((sum, s) => sum + (s.amount || 0), 0);
+
+  return { dailyRollover, extraSaved, manualSaved, total: dailyRollover + extraSaved + manualSaved };
+}
+
+function totalSavings() {
+  return D.savings.reduce((s, sv) => s + (sv.amount || 0), 0);
+}
+
+// Monthly subscription cost
+function monthlySubCost() {
+  let total = 0;
+  for (const s of D.subscriptions) {
+    if (s.interval === 'yearly') total += (s.amountEUR || 0) / 12;
+    else total += (s.amountEUR || 0);
+  }
+  return total;
+}
+
+function netWorthAfterSubs() {
+  return D.state.netWorth - monthlySubCost();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function go(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.ni[id]').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const ni = document.getElementById('ni-' + name);
+  if (ni) ni.classList.add('active');
+  if (name==='home')     renderHome();
+  if (name==='history')  renderHistory();
+  if (name==='overview') renderOverview();
+  if (name==='settings') renderSettings();
+}
+
+// ============================================================
+// SHEETS
+// ============================================================
+function openSheet(id) {
+  document.getElementById('bg-' + id).classList.add('open');
+  document.getElementById(id).classList.add('open');
+}
+function closeSheet(id) {
+  document.getElementById('bg-' + id).classList.remove('open');
+  document.getElementById(id).classList.remove('open');
+}
+function openExpSheet() {
+  eCur='EUR'; eBucket='daily';
+  document.getElementById('e-amt').value='';
+  document.getElementById('e-note').value='';
+  document.getElementById('e-sym').textContent='€';
+  selCur('e','EUR'); selBucket('daily');
+  openSheet('sh-exp');
+  setTimeout(()=>document.getElementById('e-amt').focus(),350);
+}
+function openIncSheet() {
+  iCur='EUR'; iToExtra=false;
+  document.getElementById('i-amt').value='';
+  document.getElementById('i-note').value='';
+  document.getElementById('i-sym').textContent='€';
+  document.getElementById('i-tog').classList.remove('on');
+  selCur('i','EUR');
+  openSheet('sh-inc');
+  setTimeout(()=>document.getElementById('i-amt').focus(),350);
+}
+
+// ============================================================
+// FORM HELPERS
+// ============================================================
+function setCur(p,c) {
+  if(p==='e') eCur=c; else iCur=c;
+  selCur(p,c);
+  document.getElementById(p+'-sym').textContent=c==='EUR'?'€':'HK$';
+}
+function selCur(p,c) {
+  document.getElementById(p+'-eur').classList.toggle('sel',c==='EUR');
+  document.getElementById(p+'-hkd').classList.toggle('sel',c==='HKD');
+}
+function setBucket(b) {
+  eBucket=b;
+  document.getElementById('e-daily').classList.toggle('sel',b==='daily');
+  document.getElementById('e-extra').classList.toggle('sel',b==='extra');
+}
+function toggleExtra() {
+  iToExtra=!iToExtra;
+  document.getElementById('i-tog').classList.toggle('on',iToExtra);
+}
+function toggleFX() {
+  useLiveFX=!useLiveFX;
+  document.getElementById('fx-tog').classList.toggle('on',useLiveFX);
+}
+function setSubInterval(v) {
+  subInterval=v;
+  document.getElementById('sub-m').classList.toggle('sel',v==='monthly');
+  document.getElementById('sub-y').classList.toggle('sel',v==='yearly');
+}
+
+// ============================================================
+// SAVE FLOWS
+// ============================================================
+function saveExp() {
+  const amt=parseFloat(document.getElementById('e-amt').value);
+  if(!isFinite(amt)||amt<=0){dlg('Ungültig','Betrag muss größer als 0 sein.',[{l:'OK',c:'confirm',fn:null}]);return;}
+  const eur=toEUR(amt,eCur);
+  const note=document.getElementById('e-note').value.trim();
+  const doSave=()=>{
+    D.expenses.push({id:uid(),date:todayStr(),time:nowTime(),bucket:eBucket,amountOriginal:amt,currency:eCur,amountHome:eur,note});
+    D.state.netWorth-=eur; save();
+    closeSheet('sh-exp'); renderHome();
+    const s=computeStats();
+    dlg('Gespeichert ✓',eur.toFixed(2)+' € ['+eBucket+']\n\nHeute verfügbar: '+s.todayAvail.toFixed(2)+' €\nWoche: '+s.weekRemain.toFixed(2)+' €',[{l:'OK',c:'confirm',fn:null}]);
+  };
+  if(eur>BIG_LIM){dlg('Große Ausgabe','Du buchst '+eur.toFixed(2)+' €. Bestätigen?',[{l:'Abbrechen',c:'cancel',fn:null},{l:'Bestätigen',c:'confirm',fn:doSave}]);}
+  else doSave();
+}
+
+function saveInc() {
+  const amt=parseFloat(document.getElementById('i-amt').value);
+  if(!isFinite(amt)||amt<=0){dlg('Ungültig','Betrag muss größer als 0 sein.',[{l:'OK',c:'confirm',fn:null}]);return;}
+  const eur=toEUR(amt,iCur);
+  const note=document.getElementById('i-note').value.trim();
+  D.incomes.push({id:uid(),date:todayStr(),time:nowTime(),amountOriginal:amt,currency:iCur,amountHome:eur,note,toExtra:iToExtra});
+  D.state.netWorth+=eur; save();
+  closeSheet('sh-inc'); renderHome();
+  const ex=extraStats();
+  dlg('Gespeichert ✓','+'+eur.toFixed(2)+'€'+(iToExtra?' (inkl. Extra)':'')+'\n\nNet Worth: '+D.state.netWorth.toFixed(2)+' €\nExtra verbleibend: '+ex.remaining.toFixed(2)+' €',[{l:'OK',c:'confirm',fn:null}]);
+}
+
+function saveNW() {
+  const val=parseFloat(document.getElementById('nw-amt').value);
+  if(!isFinite(val)){dlg('Ungültig','Bitte eine Zahl eingeben.',[{l:'OK',c:'confirm',fn:null}]);return;}
+  D.state.netWorth=val; save();
+  closeSheet('sh-nw'); renderSettings();
+  dlg('Gespeichert','Net Worth: '+val.toFixed(2)+' €',[{l:'OK',c:'confirm',fn:null}]);
+}
+
+function saveLimits() {
+  const wd=parseFloat(document.getElementById('lim-wd').value);
+  const we=parseFloat(document.getElementById('lim-we').value);
+  const ex=parseFloat(document.getElementById('lim-ex').value);
+  if(!isFinite(wd)||wd<=0||!isFinite(we)||we<=0||!isFinite(ex)||ex<=0){
+    dlg('Ungültig','Alle Werte müssen > 0 sein.',[{l:'OK',c:'confirm',fn:null}]);return;
+  }
+  D.config.dailyWeekdayLimit=wd; D.config.dailyWeekendLimit=we; D.config.extraBaseMonthly=ex;
+  save(); closeSheet('sh-limits'); renderHome(); renderSettings();
+  dlg('Gespeichert','Wochentag: '+wd+' €\nWochenende: '+we+' €\nExtra: '+ex+' €/Monat',[{l:'OK',c:'confirm',fn:null}]);
+}
+
+function saveTZ() {
+  const tz=document.getElementById('tz-sel').value;
+  D.config.timezone=tz; save();
+  closeSheet('sh-tz'); renderHome(); renderSettings();
+  dlg('Timezone gesetzt',tz,[{l:'OK',c:'confirm',fn:null}]);
+}
+
+function saveFX() {
+  const rate=parseFloat(document.getElementById('fx-rate').value);
+  if(!isFinite(rate)||rate<=0){dlg('Ungültig','Bitte eine positive Zahl eingeben.',[{l:'OK',c:'confirm',fn:null}]);return;}
+  D.config.eurPerHKD=rate; D.config.useLiveFX=useLiveFX; save();
+  closeSheet('sh-fx'); renderSettings();
+  dlg('Gespeichert','1 HKD = '+rate.toFixed(4)+' EUR',[{l:'OK',c:'confirm',fn:null}]);
+}
+
+function doResetRollovers() {
+  const carry = savedThisMonth().dailyRollover;
+  const isNeg = carry < 0;
+  const absCarry = Math.abs(carry).toFixed(2);
+  const msg = isNeg
+    ? 'Negativer Carry: −' + absCarry + ' €\n\nDieser Betrag wird vom Sparbuch abgezogen und der Rollover auf 0 gesetzt.'
+    : 'Aufgelaufener Carry: +' + absCarry + ' €\n\nDieser Betrag wird ins Sparbuch gebucht und der Rollover auf 0 gesetzt.';
+  dlg('Rollover zurücksetzen', msg,
+    [{l:'Abbrechen',c:'cancel',fn:null},{l:'Zurücksetzen',c:'confirm',fn:()=>{
+      if(carry !== 0){
+        D.savings.push({id:uid(),date:todayStr(),amount:carry,note:isNeg?'Rollover Reset (negativ)':'Rollover Reset',type:'rollover'});
+      }
+      D.state.rolloverResetDate=todayStr(); save(); renderHome(); renderSettings();
+      const msg2 = isNeg
+        ? '−'+absCarry+' € vom Sparbuch abgezogen.'
+        : '+'+absCarry+' € ins Sparbuch gebucht.';
+      dlg('Fertig', carry!==0 ? msg2 : 'Rollover zurückgesetzt.',[{l:'OK',c:'confirm',fn:null}]);
+    }}]);
+}
+
+function addSub() {
+  const name=document.getElementById('sub-name').value.trim();
+  const amt=parseFloat(document.getElementById('sub-amt').value);
+  if(!name||!isFinite(amt)||amt<=0){dlg('Ungültig','Name und Betrag erforderlich.',[{l:'OK',c:'confirm',fn:null}]);return;}
+  D.subscriptions.push({id:uid(),name,amountEUR:amt,interval:subInterval});
+  save(); renderSubList(); renderHome(); renderSettings();
+  document.getElementById('sub-name').value='';
+  document.getElementById('sub-amt').value='';
+}
+
+function deleteSub(id) {
+  const sub=D.subscriptions.find(s=>s.id===id);
+  if(!sub) return;
+  dlg('Abo löschen?',sub.name+' – '+sub.amountEUR.toFixed(2)+' €',[
+    {l:'Abbrechen',c:'cancel',fn:null},
+    {l:'Löschen',c:'danger',fn:()=>{ D.subscriptions=D.subscriptions.filter(s=>s.id!==id); save(); renderSubList(); renderHome(); renderSettings(); }}
+  ]);
+}
+
+function renderSubList() {
+  const sec=document.getElementById('sub-list-sec');
+  if(!D.subscriptions.length){sec.innerHTML='<div class="empty"><div class="empty-ic">◌</div>Keine Abos eingetragen</div>';return;}
+  sec.innerHTML='<div class="slbl">Aktive Abos</div>'+D.subscriptions.map(s=>`
+    <div class="he" onclick="deleteSub('${s.id}')">
+      <div class="heic sub">↻</div>
+      <div class="hein"><div class="hede">${s.name}</div><div class="heme">${s.interval==='yearly'?'Jährlich':'Monatlich'} · ${(s.interval==='yearly'?s.amountEUR/12:s.amountEUR).toFixed(2)} €/Mo</div></div>
+      <div class="heat sub">−${s.amountEUR.toFixed(2)} €</div>
+    </div>`).join('');
+}
+
+function doExport() {
+  const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='budget_backup_'+todayStr()+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// RENDER: HOME
+// ============================================================
+function renderHome() {
+  const s=computeStats(), ex=extraStats(), sv=savedThisMonth();
+  const neg=s.isOverBase;
+
+  // Big number: today available
+  const sign=document.getElementById('h-sign');
+  const num=document.getElementById('h-num');
+  sign.textContent=neg?'−':'+';
+  sign.className='hn-s'+(neg?' neg':'');
+  num.textContent=Math.round(Math.abs(s.todayAvail));
+  num.className='hn-n'+(neg?' neg':'');
+
+  const wNeg=s.weekRemain<0;
+  document.getElementById('h-week').textContent=(wNeg?'−':'+')+Math.round(Math.abs(s.weekRemain));
+
+  // Card: Heute ausgegeben — red when todaySpent > todayBase
+  const spentEl=document.getElementById('h-spent');
+  spentEl.textContent=s.todaySpent.toFixed(2)+' €';
+  spentEl.style.color=neg?'var(--re)':'var(--tx)';
+  document.getElementById('h-spent-sub').textContent='von '+s.todayBase+' € Basis';
+
+  // Card: Extra Budget
+  const exEl=document.getElementById('h-extra');
+  exEl.textContent=Math.round(ex.remaining)+' €';
+  exEl.style.color=ex.remaining<0?'var(--re)':'var(--go)';
+
+  // Card: Rollover carry
+  const carryEl=document.getElementById('h-carry');
+  const carry=sv.dailyRollover;
+  carryEl.textContent=(carry>=0?'+':'')+Math.round(carry)+' €';
+  carryEl.style.color=carry<0?'var(--re)':carry>0?'var(--gr)':'var(--tm)';
+
+  // Card: Gespart Monat
+  const savEl=document.getElementById('h-saved');
+  savEl.textContent=(sv.total>=0?'+':'')+Math.round(sv.total)+' €';
+  savEl.style.color=sv.total<0?'var(--re)':'var(--sa)';
+  document.getElementById('h-saved-sub').textContent='rollover '+(carry>=0?'+':'')+Math.round(carry)+' · extra +'+Math.round(sv.extraSaved);
+
+  // Net Worth
+  const nwAfter=netWorthAfterSubs();
+  document.getElementById('h-nw').textContent=D.state.netWorth.toFixed(0)+' €';
+  document.getElementById('h-nw-sub').textContent='nach Abos: '+nwAfter.toFixed(0)+' €';
+
+  // last entry
+  const all=[...D.expenses.map(e=>({...e,kind:'expense'})),...D.incomes.map(i=>({...i,kind:'income'}))].sort((a,b)=>b.id.localeCompare(a.id));
+  if(all.length>0){
+    const last=all[0];
+    document.getElementById('h-last').style.display='flex';
+    document.getElementById('le-dot').className='led '+(last.kind==='income'?'income':'');
+    document.getElementById('le-text').textContent=last.note||(last.kind==='expense'?last.bucket+' Ausgabe':'Einnahme');
+    document.getElementById('le-amt').textContent=(last.kind==='expense'?'−':'+')+Math.round(last.amountHome||0)+' €';
+  }
+}
+
+// ============================================================
+// RENDER: HISTORY
+// ============================================================
+function setHistTab(t) {
+  histTab=t;
+  document.querySelectorAll('#view-history .tab-btn').forEach((b,i)=>b.classList.toggle('active',['all','today','expense','income'][i]===t));
+  renderHistory();
+}
+
+function renderHistory() {
+  const today=todayStr();
+  let all=[...D.expenses.map(e=>({...e,kind:'expense'})),...D.incomes.map(i=>({...i,kind:'income'}))].sort((a,b)=>b.id.localeCompare(a.id));
+  if(histTab==='today') all=all.filter(e=>e.date===today);
+  if(histTab==='expense') all=all.filter(e=>e.kind==='expense');
+  if(histTab==='income') all=all.filter(e=>e.kind==='income');
+  document.getElementById('hist-sub').textContent=all.length+' Buchungen';
+  const list=document.getElementById('hist-list');
+  if(!all.length){list.innerHTML='<div class="empty"><div class="empty-ic">○</div>Keine Einträge</div>';return;}
+  list.innerHTML=all.slice(0,30).map(e=>{
+    const isExp=e.kind==='expense';
+    const amt=(isExp?'−':'+')+(e.amountHome||0).toFixed(2)+' €';
+    const label=e.note||(isExp?e.bucket+' Ausgabe':'Einnahme');
+    const meta=e.date+' · '+(e.time||'')+(isExp?' · '+e.bucket:'');
+    return `<div class="he" onclick="askDelete('${e.id}','${e.kind}')">
+      <div class="heic ${e.kind}">${isExp?'↓':'↑'}</div>
+      <div class="hein"><div class="hede">${label}</div><div class="heme">${meta}</div></div>
+      <div class="heat ${e.kind}">${amt}</div>
+    </div>`;
+  }).join('');
+}
+
+function askDelete(id, kind) {
+  const arr=kind==='expense'?D.expenses:D.incomes;
+  const entry=arr.find(x=>x.id===id);
+  if(!entry) return;
+  const label=entry.note||(kind==='expense'?entry.bucket+' Ausgabe':'Einnahme');
+  dlg('Löschen?','"'+label+'" — '+(entry.amountHome||0).toFixed(2)+' €',[
+    {l:'Abbrechen',c:'cancel',fn:null},
+    {l:'Löschen',c:'danger',fn:()=>{
+      const idx=arr.findIndex(x=>x.id===id);
+      if(idx>=0){
+        if(kind==='expense') D.state.netWorth+=(entry.amountHome||0);
+        else D.state.netWorth-=(entry.amountHome||0);
+        arr.splice(idx,1); save(); renderHistory(); renderHome();
+      }
+    }}
+  ]);
+}
+
+// ============================================================
+// RENDER: OVERVIEW
+// ============================================================
+function setOvTab(t) {
+  ovTab=t;
+  document.querySelectorAll('#view-overview .tab-btn').forEach((b,i)=>b.classList.toggle('active',['weekly','monthly','overall','savings'][i]===t));
+  renderOverview();
+}
+
+function renderOverview() {
+  document.getElementById('ov-content').innerHTML=buildOv();
+}
+
+function buildOv() {
+  if(ovTab==='weekly')  return buildWeekly();
+  if(ovTab==='monthly') return buildMonthly();
+  if(ovTab==='savings') return buildSavings();
+  return buildOverall();
+}
+
+function buildWeekly() {
+  const s=computeStats();
+  const map=dailyExpMap();
+  const dow=new Date(s.today+'T12:00:00').getDay();
+  const mon=addDays(s.today,-((dow+6)%7));
+  let wSpent=0, d=mon;
+  while(cmp(d,s.today)<=0){wSpent+=map[d]||0;d=addDays(d,1);}
+  return `
+  <div class="stcard"><div class="sc-title">Diese Woche · Daily</div>
+    <div class="sr"><div class="sr-l">Ausgaben</div><div class="sr-v">${wSpent.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Verbleibend</div><div class="sr-v ${s.weekRemain>=0?'pos':'neg'}">${sgn(s.weekRemain)}${r2(s.weekRemain)} €</div></div>
+  </div>
+  <div class="stcard"><div class="sc-title">Heute</div>
+    <div class="sr"><div class="sr-l">Basis-Limit</div><div class="sr-v">${s.todayBase.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Ausgegeben</div><div class="sr-v">${s.todaySpent.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Verfügbar (inkl. Rollover)</div><div class="sr-v ${s.todayAvail>=0?'pos':'neg'}">${sgn(s.todayAvail)}${r2(s.todayAvail)} €</div></div>
+  </div>`;
+}
+
+function buildMonthly() {
+  const today=todayStr();
+  const td=new Date(today+'T12:00:00');
+  const ms=monthStart(today);
+  const rs=rolloverStart();
+  const rS=cmp(rs,ms)>0?rs:ms;
+  const map=dailyExpMap();
+  let allowed=0,spent=0,d=rS;
+  while(cmp(d,today)<=0){allowed+=baseDailyLimit(d);spent+=map[d]||0;d=addDays(d,1);}
+  const delta=allowed-spent;
+  const ex=extraStats();
+  const sv=savedThisMonth();
+  const ml=String(td.getMonth()+1).padStart(2,'0')+'.'+td.getFullYear();
+  return `
+  <div class="stcard"><div class="sc-title">Daily Budget · ${ml}</div>
+    <div class="sr"><div class="sr-l">Erlaubt (seit Reset)</div><div class="sr-v">${allowed.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Ausgegeben</div><div class="sr-v">${spent.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Delta</div><div class="sr-v ${delta>=0?'pos':'neg'}">${sgn(delta)}${r2(delta)} €</div></div>
+  </div>
+  <div class="stcard"><div class="sc-title">Extra Budget · ${ml}</div>
+    <div class="sr"><div class="sr-l">Basis</div><div class="sr-v">${ex.base.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Rollover Vormonat</div><div class="sr-v">${ex.rolloverFromPrev.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Einnahmen zu Extra</div><div class="sr-v pos">+${ex.incomes.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Gesamt verfügbar</div><div class="sr-v">${ex.budgetThisMonth.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Ausgegeben</div><div class="sr-v">${ex.spentThisMonth.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Verbleibend</div><div class="sr-v ${ex.remaining>=0?'pos':'neg'}">${sgn(ex.remaining)}${r2(ex.remaining)} €</div></div>
+  </div>
+  <div class="stcard"><div class="sc-title">Gespart · ${ml}</div>
+    <div class="sr"><div class="sr-l">Daily Rollover</div><div class="sr-v sa">${sv.dailyRollover.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Extra gespart</div><div class="sr-v sa">${sv.extraSaved.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Gesamt gespart</div><div class="sr-v sa">${sv.total.toFixed(2)} €</div></div>
+  </div>`;
+}
+
+function buildOverall() {
+  const today=todayStr();
+  const rs=rolloverStart();
+  const map=dailyExpMap();
+  let allowed=0,spentD=0,d=rs;
+  while(cmp(d,today)<=0){allowed+=baseDailyLimit(d);spentD+=map[d]||0;d=addDays(d,1);}
+  const spentE=D.expenses.filter(e=>e.bucket==='extra').reduce((s,e)=>s+(e.amountHome||0),0);
+  const totInc=D.incomes.reduce((s,i)=>s+(i.amountHome||0),0);
+  const cf=totInc-(spentD+spentE);
+  const dDelta=allowed-spentD;
+  const totSav=totalSavings();
+  return `
+  <div class="stcard"><div class="sc-title">Daily — seit ${rs}</div>
+    <div class="sr"><div class="sr-l">Erlaubt gesamt</div><div class="sr-v">${allowed.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Ausgegeben</div><div class="sr-v">${spentD.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Delta</div><div class="sr-v ${dDelta>=0?'pos':'neg'}">${sgn(dDelta)}${r2(dDelta)} €</div></div>
+  </div>
+  <div class="stcard"><div class="sc-title">Cashflow gesamt</div>
+    <div class="sr"><div class="sr-l">Extra ausgegeben</div><div class="sr-v">${spentE.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Einnahmen gesamt</div><div class="sr-v pos">+${totInc.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Cashflow</div><div class="sr-v ${cf>=0?'pos':'neg'}">${sgn(cf)}${r2(cf)} €</div></div>
+  </div>
+  <div class="stcard"><div class="sc-title">Net Worth</div>
+    <div class="sr"><div class="sr-l">Aktuell</div><div class="sr-v go">${D.state.netWorth.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Nach Abos (Monat)</div><div class="sr-v">${netWorthAfterSubs().toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Manuell gespart (gesamt)</div><div class="sr-v sa">${totSav.toFixed(2)} €</div></div>
+  </div>`;
+}
+
+function buildSavings() {
+  const sv=savedThisMonth();
+  const totSav=totalSavings();
+  const subCost=monthlySubCost();
+  const entries=D.savings.slice().sort((a,b)=>b.id.localeCompare(a.id));
+  const entriesHTML=entries.length?entries.slice(0,20).map(s=>`
+    <div class="he" onclick="askDeleteSaving('${s.id}')">
+      <div class="heic" style="background:var(--sa-d);color:var(--sa)">↑</div>
+      <div class="hein"><div class="hede">${s.note||'Gespart'}</div><div class="heme">${s.date} · ${s.type||'manuell'}</div></div>
+      <div class="heat" style="color:var(--sa)">+${(s.amount||0).toFixed(2)} €</div>
+    </div>`).join('')
+    :'<div class="empty"><div class="empty-ic">◌</div>Noch nichts gespart</div>';
+  return `
+  <div class="stcard"><div class="sc-title">Dieser Monat</div>
+    <div class="sr"><div class="sr-l">Daily Rollover (ungenutzt)</div><div class="sr-v sa">${sv.dailyRollover.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Extra Budget (Rest)</div><div class="sr-v sa">${sv.extraSaved.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Manuell gespart</div><div class="sr-v sa">${sv.manualSaved.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Gesamt gespart (Monat)</div><div class="sr-v sa">${sv.total.toFixed(2)} €</div></div>
+  </div>
+  <div class="stcard"><div class="sc-title">Abonnements (monatliche Last)</div>
+    <div class="sr"><div class="sr-l">Monatlich</div><div class="sr-v neg">−${subCost.toFixed(2)} €</div></div>
+    <div class="sr"><div class="sr-l">Net Worth danach</div><div class="sr-v">${netWorthAfterSubs().toFixed(2)} €</div></div>
+  </div>
+  <div class="stcard"><div class="sc-title">Sparbuch gesamt</div>
+    <div class="sr"><div class="sr-l">Manuell gespart (gesamt)</div><div class="sr-v sa">${totSav.toFixed(2)} €</div></div>
+  </div>
+  <div style="margin-top:4px">${entriesHTML}</div>`;
+}
+
+function askDeleteSaving(id) {
+  const s=D.savings.find(x=>x.id===id);
+  if(!s) return;
+  dlg('Spareintrag löschen?','"'+(s.note||'Gespart')+'" — '+(s.amount||0).toFixed(2)+' €',[
+    {l:'Abbrechen',c:'cancel',fn:null},
+    {l:'Löschen',c:'danger',fn:()=>{ D.savings=D.savings.filter(x=>x.id!==id); save(); renderOverview(); }}
+  ]);
+}
+
+// ============================================================
+// RENDER: SETTINGS
+// ============================================================
+function renderSettings() {
+  document.getElementById('s-nw-val').textContent=D.state.netWorth.toFixed(2)+' €';
+  document.getElementById('s-nw-sub-val').textContent=netWorthAfterSubs().toFixed(2)+' €';
+  document.getElementById('s-limits-sub').textContent='Wochentag '+D.config.dailyWeekdayLimit+' € · WE '+D.config.dailyWeekendLimit+' € · Extra '+D.config.extraBaseMonthly+' €/Mo';
+  document.getElementById('s-tz-sub').textContent=D.config.timezone||DEF_TZ;
+  document.getElementById('s-fx-sub').textContent='1 HKD = '+(D.config.eurPerHKD||DEF_FX).toFixed(4)+' EUR';
+  document.getElementById('s-sub-sub').textContent=D.subscriptions.length+' Abos · '+monthlySubCost().toFixed(2)+' €/Mo';
+  document.getElementById('nw-amt').value=D.state.netWorth.toFixed(2);
+  document.getElementById('lim-wd').value=D.config.dailyWeekdayLimit;
+  document.getElementById('lim-we').value=D.config.dailyWeekendLimit;
+  document.getElementById('lim-ex').value=D.config.extraBaseMonthly;
+  document.getElementById('tz-sel').value=D.config.timezone||DEF_TZ;
+  document.getElementById('fx-rate').value=(D.config.eurPerHKD||DEF_FX).toFixed(6);
+  useLiveFX=D.config.useLiveFX||false;
+  document.getElementById('fx-tog').classList.toggle('on',useLiveFX);
+  renderSubList();
+}
+
+// ============================================================
+// DIALOG
+// ============================================================
+let _dlgFns=[];
+function dlg(title,msg,btns){
+  document.getElementById('dlg-t').textContent=title;
+  document.getElementById('dlg-m').textContent=msg;
+  _dlgFns=btns;
+  document.getElementById('dlg-bs').innerHTML=btns.map((b,i)=>`<button class="dlg-btn ${b.c}" onclick="dlgAct(${i})">${b.l}</button>`).join('');
+  document.getElementById('dlg-bg').classList.add('open');
+}
+function dlgAct(i){
+  document.getElementById('dlg-bg').classList.remove('open');
+  if(_dlgFns[i]&&_dlgFns[i].fn) _dlgFns[i].fn();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadData();
+renderHome();
+renderSettings();
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+
+</body>
+</html>
